@@ -6,6 +6,17 @@ import sys
 _local_bin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
 if os.path.exists(_local_bin) and _local_bin not in os.environ.get("PATH", ""):
     os.environ["PATH"] = _local_bin + os.pathsep + os.environ.get("PATH", "")
+
+# PyAV compatibility shim for faster-whisper (metadata_errors argument removed in newer PyAV)
+try:
+    import av
+    _orig_av_open = av.open
+    def _patched_av_open(*args, **kwargs):
+        kwargs.pop("metadata_errors", None)
+        return _orig_av_open(*args, **kwargs)
+    av.open = _patched_av_open
+except Exception:
+    pass
 import cv2
 import subprocess
 import shutil

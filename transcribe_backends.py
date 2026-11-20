@@ -33,6 +33,18 @@ import tempfile
 import threading
 import time
 
+# PyAV 14+ / Cython compatibility with faster-whisper decode_audio:
+# faster-whisper passes metadata_errors="ignore" which newer av.open does not accept.
+try:
+    import av
+    _orig_av_open = av.open
+    def _patched_av_open(*args, **kwargs):
+        kwargs.pop("metadata_errors", None)
+        return _orig_av_open(*args, **kwargs)
+    av.open = _patched_av_open
+except Exception:
+    pass
+
 from subtitles import (
     get_whisper_config,
     WHISPER_TRANSCRIBE_PARAMS,
