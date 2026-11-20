@@ -435,6 +435,7 @@ def _probe_with_proxies(url, proxies, strategies, static_errors, paid, ck_path):
             # exactly this (proxy_usage: `list=` and `results?search_query`).
             opts = {"skip_download": True, "quiet": True, "no_warnings": True,
                     "noplaylist": True,
+                    "js_runtimes": {"node": {}}, "remote_components": {"ejs:github"},
                     "logger": _QuietLogger(), "extractor_args": extractor_args}
             authed = bool(ck_path and use_cookies)
             if authed and session.spent:

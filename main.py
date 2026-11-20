@@ -1030,6 +1030,11 @@ def _download_youtube_video(url, output_dir=".", on_audio=None, allow_paid=True,
             # playlist's), paying for all of them and keeping the last.
             'noplaylist': True,
             'extractor_args': extractor_args,
+            # yt-dlp 2026+ requires a JS runtime to solve YouTube's signature
+            # and n-parameter challenges. Node.js is available on this host;
+            # the EJS solver lib is fetched once and cached.
+            'js_runtimes': {'node': {}},
+            'remote_components': {'ejs:github'},
             'http_headers': {
                 'User-Agent': (
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -2807,11 +2812,15 @@ if __name__ == '__main__':
     def _report_job_cpu():
         """CPU time of the whole job (this process + every ffmpeg it waited
         for) for app.py's log, to compare pipeline versions per job."""
-        import resource
-        own = resource.getrusage(resource.RUSAGE_SELF)
-        kids = resource.getrusage(resource.RUSAGE_CHILDREN)
-        py_s = own.ru_utime + own.ru_stime
-        children_s = kids.ru_utime + kids.ru_stime
+        try:
+            import resource
+            own = resource.getrusage(resource.RUSAGE_SELF)
+            kids = resource.getrusage(resource.RUSAGE_CHILDREN)
+            py_s = own.ru_utime + own.ru_stime
+            children_s = kids.ru_utime + kids.ru_stime
+        except ImportError:
+            py_s = 0.0
+            children_s = 0.0
         # Where Parakeet ran (None: this job did not load it). A "cpu" here on
         # a GPU host means the image shipped onnxruntime without CUDA.
         asr = sys.modules.get("transcribe_backends")

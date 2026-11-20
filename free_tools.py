@@ -351,6 +351,8 @@ def fetch_transcript(video_id: str, lang: Optional[str] = None) -> dict:
                 opts = {"skip_download": True, "quiet": True, "no_warnings": True,
                         "noplaylist": True, "logger": _QuietLogger(),
                         "socket_timeout": 15,
+                        # yt-dlp 2026+ needs a JS runtime for YouTube.
+                        "js_runtimes": {"node": {}}, "remote_components": {"ejs:github"},
                         # Captions only: without this a video whose formats are
                         # SABR-only fails with "Requested format is not available"
                         # although its caption list came back fine.
