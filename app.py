@@ -4991,9 +4991,10 @@ def _job_nice():
 
 
 def _lower_priority():
-    n = _job_nice()
-    if n:
-        os.nice(n)
+    if hasattr(os, "nice"):
+        n = _job_nice()
+        if n:
+            os.nice(n)
 
 
 def _job_encode_env(env):
@@ -5141,6 +5142,7 @@ async def _run_main(job_id, cmd, env, tick=None):
     nice = _job_nice()
     launch = (["nice", "-n", str(nice), *cmd]
               if nice and shutil.which("nice") else list(cmd))
+    preexec = (_lower_priority if nice and launch[0] != "nice" else None) if sys.platform != "win32" else None
     process = await asyncio.to_thread(
         subprocess.Popen,
         launch,
@@ -5148,7 +5150,7 @@ async def _run_main(job_id, cmd, env, tick=None):
         stderr=subprocess.STDOUT, # Merge stderr to stdout
         env=env,
         cwd=os.getcwd(),
-        preexec_fn=(_lower_priority if nice and launch[0] != "nice" else None),
+        preexec_fn=preexec,
     )
     # We need to capture logs in a thread because Popen isn't async
     t_log = threading.Thread(target=enqueue_output, args=(process.stdout, job_id))
