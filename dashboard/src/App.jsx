@@ -995,10 +995,14 @@ function App() {
   const fetchUserProfiles = async ({ silent = false } = {}) => {
     if (!uploadPostKey && !isManaged) return;
     try {
+      const trimmedKey = uploadPostKey ? uploadPostKey.trim() : '';
       const res = await apiFetch('/api/social/user', {
-        headers: uploadPostKey ? { 'X-Upload-Post-Key': uploadPostKey } : {}
+        headers: trimmedKey ? { 'X-Upload-Post-Key': trimmedKey } : {}
       });
-      if (!res.ok) throw new Error("Failed to fetch");
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.detail || `Server responded with status ${res.status}`);
+      }
       const data = await res.json();
       if (data.profiles && data.profiles.length > 0) {
         setUserProfiles(data.profiles);
@@ -1007,10 +1011,10 @@ function App() {
           setUploadUserId(data.profiles[0].username);
         }
       } else if (!silent) {
-        alert("No profiles found for this API Key.");
+        alert("No user profiles found. Please go to app.upload-post.com/manage-users and create at least one user profile.");
       }
     } catch (e) {
-      if (!silent) alert("Error fetching User Profiles. Please check key.");
+      if (!silent) alert(`Error fetching User Profiles: ${e.message}\n\nPlease verify:\n1. Your key from app.upload-post.com/api-keys is correct.\n2. You created a profile under app.upload-post.com/manage-users.`);
       console.error(e);
     }
   };
@@ -1912,7 +1916,7 @@ function App() {
                     <input
                       type="password"
                       value={uploadPostKey}
-                      onChange={(e) => setUploadPostKey(e.target.value)}
+                      onChange={(e) => setUploadPostKey(e.target.value.trim())}
                       className="input-field"
                       placeholder="ey..."
                     />

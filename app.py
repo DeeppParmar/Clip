@@ -9502,6 +9502,7 @@ async def get_social_user(request: Request):
     if BILLING_ENABLED:
         return await _managed_social_user(request, api_key, forced_profile)
 
+    api_key = api_key.strip() if api_key else ""
     url = "https://api.upload-post.com/api/uploadposts/users"
     print(f"🔍 Fetching User ID from: {url}")
     headers = {"Authorization": f"Apikey {api_key}"}

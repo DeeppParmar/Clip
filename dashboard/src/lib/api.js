@@ -39,6 +39,7 @@ export function openQuotaWall(err, source) {
 // Drop-in fetch wrapper. Always attaches the bearer token when present.
 export async function apiFetch(path, options = {}) {
   const headers = new Headers(options.headers || {});
+  headers.set('ngrok-skip-browser-warning', 'true');
   const token = getToken();
   if (token) headers.set('Authorization', `Bearer ${token}`);
 
