@@ -54,5 +54,10 @@ if sys.platform == "win32":
 
     def fcntl(fd, op, arg=0):
         return 0
+
+try:
+    import mediapipe_compat
+except Exception:
+    pass
 else:
     from fcntl import *

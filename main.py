@@ -1,4 +1,11 @@
 import time
+import os
+import sys
+
+# Ensure local bin (ffmpeg, ffprobe) is always on PATH for all operations
+_local_bin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
+if os.path.exists(_local_bin) and _local_bin not in os.environ.get("PATH", ""):
+    os.environ["PATH"] = _local_bin + os.pathsep + os.environ.get("PATH", "")
 import cv2
 import subprocess
 import shutil
@@ -19,6 +26,7 @@ import math
 import numpy as np
 from tqdm import tqdm
 import yt_dlp
+import mediapipe_compat
 import mediapipe as mp
 # import whisper (replaced by faster_whisper inside function)
 from google import genai

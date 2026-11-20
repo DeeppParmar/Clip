@@ -37,6 +37,7 @@ import time
 import wave
 
 import numpy as np
+import mediapipe_compat
 
 SAMPLE_RATE = 48000
 

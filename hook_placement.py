@@ -189,6 +189,7 @@ _DETECTOR_LOCK = threading.Lock()
 def _detector():
     global _DETECTOR
     if _DETECTOR is None:
+        import mediapipe_compat
         import mediapipe as mp
         # model_selection=1: the full-range model, so the small faces of a
         # GENERAL (blurred-backdrop) layout are found too.

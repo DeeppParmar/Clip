@@ -42,6 +42,11 @@ from jsonfile import write_json_atomic
 
 load_dotenv()
 
+# Ensure local bin (ffmpeg, ffprobe) is always on PATH for all child processes
+_local_bin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
+if os.path.exists(_local_bin) and _local_bin not in os.environ.get("PATH", ""):
+    os.environ["PATH"] = _local_bin + os.pathsep + os.environ.get("PATH", "")
+
 # Constants
 UPLOAD_DIR = "uploads"
 OUTPUT_DIR = "output"
