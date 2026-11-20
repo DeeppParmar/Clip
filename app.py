@@ -9071,7 +9071,8 @@ async def translate_clip(
     x_elevenlabs_key: Optional[str] = Header(None, alias="X-ElevenLabs-Key")
 ):
     """Translate a video clip to a different language using ElevenLabs dubbing."""
-    if not x_elevenlabs_key:
+    key = x_elevenlabs_key or os.environ.get("ELEVENLABS_API_KEY")
+    if not key:
         raise HTTPException(status_code=400, detail="Missing X-ElevenLabs-Key header")
 
     await _ensure_job_files(req.job_id, request)
@@ -9120,7 +9121,7 @@ async def translate_clip(
                 video_path=input_path,
                 output_path=output_path,
                 target_language=req.target_language,
-                api_key=x_elevenlabs_key,
+                api_key=key,
                 source_language=req.source_language,
             )
 
@@ -11194,7 +11195,7 @@ async def saasshorts_generate(
     """Generate a SaaS UGC video from a script. Returns a job_id for polling."""
     await require_managed_entitlement(request)
     fal_key = x_fal_key
-    elevenlabs_key = x_elevenlabs_key
+    elevenlabs_key = x_elevenlabs_key or os.environ.get("ELEVENLABS_API_KEY")
 
     if not fal_key:
         raise HTTPException(status_code=400, detail="Missing fal.ai API Key (X-Fal-Key header)")

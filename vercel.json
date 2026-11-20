@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd dashboard && npm run build",
+  "outputDirectory": "dashboard/dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/((?!.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

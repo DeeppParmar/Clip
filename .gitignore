@@ -1,4 +1,7 @@
-# Video files
+# Executables / large binaries
+bin/*.exe
+*.exe
+
 *.mp4
 *.webm
 *.mov
